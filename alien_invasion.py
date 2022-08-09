@@ -1,8 +1,10 @@
 from asyncio import events
+from hashlib import new
 import sys
 import pygame
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 ##création dune fenetre  pygame vide en creant une classe pour representer le jeu
 
 class AlienInvasion:
@@ -23,6 +25,8 @@ class AlienInvasion:
         self.ship = Ship(self)
         #definissez  la couleur d'arriere plan
         self.bg_color = (230,230,230)
+        self.bullets = pygame.sprite.Group() #changement 2 cette ligne permet de dessiner des balles a lecran a chaque passage de la boucle 
+        
     
     
     
@@ -33,6 +37,7 @@ class AlienInvasion:
             #surveiller  les évenements du clavier et de la sourri
             self._check_events()
             self.ship.update()
+            self.bullets.update()#changement2 mise a jour de la position des balles a chaque passage dans la boucle 
             self._update_screen()
             
            
@@ -70,6 +75,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
         
 
     def _check_keyup_events(self, event):
@@ -78,6 +85,12 @@ class AlienInvasion:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+        
+    #voici la methode self.fire_bullet() ici
+    def _fire_bullet(self):
+        """creez une nouvelle balle puis ajoutez la au groupe de balle"""
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
     
 ##décomposition par méthode de _check_events
     
@@ -86,6 +99,8 @@ class AlienInvasion:
         """mettre a jour les images de lecran et basculer vers le nouvel ecran"""
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         #rendre visible l'ecran le plus recemment déssiné
         pygame.display.flip()
 
