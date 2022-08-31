@@ -37,7 +37,14 @@ class AlienInvasion:
             #surveiller  les évenements du clavier et de la sourri
             self._check_events()
             self.ship.update()
-            self.bullets.update()#changement2 mise a jour de la position des balles a chaque passage dans la boucle 
+            self._update_bullets()
+           # #self.bullets.update()#changement2 mise a jour de la position des balles a chaque passage dans la boucle 
+           # #faire disparaitre les balles qui napparaissent plus a lecran pour economiser de la memoire
+           # #for bullet in self.bullets.copy():
+           # #    if bullet.rect.bottom <= 0 :
+           # #        self.bullets.remove(bullet)
+           # #print(len(self.bullets))
+
             self._update_screen()
             
            
@@ -89,10 +96,23 @@ class AlienInvasion:
     #voici la methode self.fire_bullet() ici
     def _fire_bullet(self):
         """creez une nouvelle balle puis ajoutez la au groupe de balle"""
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
     
 ##décomposition par méthode de _check_events
+ # ajout dune nouvelle méthode _update_bullets() pour garder la classe AlienInvasion bien organisée
+    def _update_bullets(self):
+        """mettre à jour la position des balles et se debarrasser des vieilles balles """
+        #mettre a jour la position des balles
+        self.bullets.update()#changement2 mise a jour de la position des balles a chaque passage dans la boucle 
+        #faire disparaitre les balles qui napparaissent plus a lecran pour economiser de la memoire
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0 :
+                self.bullets.remove(bullet)
+
+
+  
     
     
     def _update_screen(self):
